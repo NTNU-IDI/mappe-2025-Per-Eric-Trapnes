@@ -31,17 +31,6 @@ public class Main {
         return command;
     }
 
-    public static int startScreen() {
-        String message = String.join("",
-                "\n\n\n\nWelcome to your digital diary!\n",
-                "At any point you can type 'exit' ",
-                "to close the program.\nYou can also ",
-                "go back a page by simply typing 'back'.\n\n");
-
-        animatedPrint(message);
-        return 1;
-    }
-
     public static void animatedPrint(String str) {
         for (int i = 0; i < str.length(); i++) {
             System.out.print(str.charAt(i));
@@ -51,6 +40,17 @@ public class Main {
                 errorMessage.printStackTrace();
             }
         }
+    }
+
+    public static int startScreen() {
+        String message = String.join("",
+                "\n\n\n\nWelcome to your digital diary!\n",
+                "At any point you can type 'exit' ",
+                "to close the program.\nYou can also ",
+                "go back a page by simply typing 'back'.\n\n");
+
+        animatedPrint(message);
+        return 1;
     }
 
     public static int loginScreen(Scanner scanner) {
@@ -72,7 +72,9 @@ public class Main {
                 animatedPrint("Username: ");
 
                 String username = exitCheck(scanner.nextLine());
-                if (userInput.equalsIgnoreCase("back")) {
+                if (username == null) {
+                    return 0;
+                } else if (username.equalsIgnoreCase("back")) {
                     return -1;
                 }
 
@@ -99,7 +101,7 @@ public class Main {
             String username = exitCheck(scanner.nextLine());
             if (username == null) {
                 return 0;
-            } else if (userInput.equalsIgnoreCase("back")) {
+            } else if (username.equalsIgnoreCase("back")) {
                 return -1;
             }
 
@@ -116,31 +118,26 @@ public class Main {
         return 0;
     }
 
+    public static int homeScreen(Scanner scanner) {
+        animatedPrint("You logged inn!");
+        System.exit(0);
+        return 0;
+    }
+
     // --- Start of program ---
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int screenNumber = 0;
 
         while (true) {
-            switch (screenNumber) {
+            screenNumber += switch (screenNumber) {
+                case -1 -> screenNumber * -1;
+                case 0 -> startScreen();
+                case 1 -> loginScreen(scanner);
+                case 2 -> homeScreen(scanner);
+                default -> 0;
 
-                case -1:
-                    screenNumber = 0;
-                    break;
-                case 0:
-                    screenNumber += startScreen();
-                    break;
-                case 1:
-                    screenNumber += loginScreen(scanner);
-                    break;
-                case 2:
-                    animatedPrint("You logged inn!");
-                    System.exit(0);
-                    break;
-                default:
-                    break;
-
-            }
+            };
 
         }
 
