@@ -10,6 +10,20 @@ import java.util.Scanner;
 public class Main {
     // Handels user input, checks for keyword 'exit'
     public static String exitCheck(String command) {
+        return exitCheck(command, 32);
+    }
+
+    public static String exitCheck(String command, int maxLength) {
+        if (command.length() > maxLength) {
+            System.out.println("ERROR: String length exceeds the maximum allowed length of " + 32);
+            return null;
+
+        }
+        if (command.isEmpty()) {
+            System.out.println("ERROR: Entered an empty string");
+            return null;
+
+        }
         if (command.equalsIgnoreCase("exit")) {
             animatedPrint("Exiting...");
             System.exit(0);
@@ -42,8 +56,9 @@ public class Main {
     public static int loginScreen(Scanner scanner) {
         animatedPrint("Have I seen you before? (Do you have an account. Yes/No): ");
         String userInput = exitCheck(scanner.nextLine());
-
-        if (userInput.equalsIgnoreCase("back")) {
+        if (userInput == null) {
+            return 0;
+        } else if (userInput.equalsIgnoreCase("back")) {
             return -1;
         }
 
@@ -82,7 +97,9 @@ public class Main {
             animatedPrint("Username: ");
 
             String username = exitCheck(scanner.nextLine());
-            if (username.equalsIgnoreCase("back")) {
+            if (username == null) {
+                return 0;
+            } else if (userInput.equalsIgnoreCase("back")) {
                 return -1;
             }
 
