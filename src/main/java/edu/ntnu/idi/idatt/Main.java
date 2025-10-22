@@ -42,7 +42,7 @@ public class Main {
         }
     }
 
-    public static int startScreen() {
+    public static int startPage() {
         String message = String.join("",
                 "\n\n\n\nWelcome to your digital diary!\n",
                 "At any point you can type 'exit' ",
@@ -53,7 +53,7 @@ public class Main {
         return 1;
     }
 
-    public static int loginScreen(Scanner scanner) {
+    public static int loginPage(Scanner scanner) {
         animatedPrint("Have I seen you before? (Do you have an account. Yes/No): ");
         String userInput = exitCheck(scanner.nextLine());
         if (userInput == null) {
@@ -118,7 +118,7 @@ public class Main {
         return 0;
     }
 
-    public static int homeScreen(Scanner scanner) {
+    public static int homePage(Scanner scanner) {
         animatedPrint("You logged inn!");
         System.exit(0);
         return 0;
@@ -127,14 +127,14 @@ public class Main {
     // --- Start of program ---
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int screenNumber = 0;
+        int currentPage = 0;
 
         while (true) {
-            screenNumber += switch (screenNumber) {
-                case -1 -> screenNumber * -1;
-                case 0 -> startScreen();
-                case 1 -> loginScreen(scanner);
-                case 2 -> homeScreen(scanner);
+            currentPage += switch (currentPage) {
+                case -1 -> currentPage * -1;
+                case 0 -> startPage();
+                case 1 -> loginPage(scanner);
+                case 2 -> homePage(scanner);
                 default -> 0;
 
             };
