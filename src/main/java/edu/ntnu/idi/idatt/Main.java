@@ -11,21 +11,36 @@ public class Main {
     // Handels user input, checks for keyword 'exit'
     public static String exitCheck(String command) {
         if (command.equalsIgnoreCase("exit")) {
-            System.out.println("Exiting...");
+            animatedPrint("Exiting...");
             System.exit(0);
         }
         return command;
     }
 
-    public static int startScreen(Scanner scanner) {
-        System.out.println("Welcome to your digital diary!");
-        System.out.println("At any point you can type 'exit' to close the program");
+    public static int startScreen() {
+        String message = String.join("",
+                "\n\n\n\nWelcome to your digital diary!\n",
+                "At any point you can type 'exit' ",
+                "to close the program.\nYou can also ",
+                "go back a page by simply typing 'back'.\n\n");
 
+        animatedPrint(message);
         return 1;
     }
 
+    public static void animatedPrint(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            System.out.print(str.charAt(i));
+            try {
+                Thread.sleep(30);
+            } catch (InterruptedException errorMessage) {
+                errorMessage.printStackTrace();
+            }
+        }
+    }
+
     public static int loginScreen(Scanner scanner) {
-        System.out.print("Have I seen you before? (Do you have an account. Yes/No): ");
+        animatedPrint("Have I seen you before? (Do you have an account. Yes/No): ");
         String userInput = exitCheck(scanner.nextLine());
 
         if (userInput.equalsIgnoreCase("back")) {
@@ -35,11 +50,11 @@ public class Main {
         // If has account
         if (userInput.equalsIgnoreCase("Yes")) {
             // Checks the String the user gives and compares with file
-            System.out.println("Welcome back!\n");
+            animatedPrint("\n\n\nWelcome back!\n");
             try (BufferedReader bufferedReader = new BufferedReader(
                     new FileReader("src\\main\\java\\edu\\ntnu\\idi\\idatt\\Username.txt"))) {
                 String line;
-                System.out.print("Username: ");
+                animatedPrint("Username: ");
 
                 String username = exitCheck(scanner.nextLine());
                 if (userInput.equalsIgnoreCase("back")) {
@@ -48,10 +63,10 @@ public class Main {
 
                 while ((line = bufferedReader.readLine()) != null) {
                     if (line.contains(username)) {
-                        System.out.println("You got a account!");
+                        animatedPrint("You got a account!\n");
                         return 1;
                     } else {
-                        System.out.println("Sorry, that account does not exist.");
+                        animatedPrint("Sorry, that account does not exist.\n");
                         return 0;
                     }
                 }
@@ -63,8 +78,8 @@ public class Main {
         } else if (userInput.equalsIgnoreCase("No")) {
             // Writes the username given to the 'Username.txt' file.
             // OBS can only store 1 username with currect implimentation
-            System.out.println("Make an account\n");
-            System.out.print("Username: ");
+            animatedPrint("Love meating new people. What's your name?\n");
+            animatedPrint("Username: ");
 
             String username = exitCheck(scanner.nextLine());
             if (username.equalsIgnoreCase("back")) {
@@ -74,7 +89,7 @@ public class Main {
             try (BufferedWriter bufferedWriter = new BufferedWriter(
                     new FileWriter("src\\main\\java\\edu\\ntnu\\idi\\idatt\\Username.txt"))) {
                 bufferedWriter.write(username);
-                System.out.println("Saved successfully!");
+                animatedPrint("Saved successfully!");
                 return -1;
 
             } catch (IOException errorMessage) {
@@ -96,13 +111,13 @@ public class Main {
                     screenNumber = 0;
                     break;
                 case 0:
-                    screenNumber += startScreen(scanner);
+                    screenNumber += startScreen();
                     break;
                 case 1:
                     screenNumber += loginScreen(scanner);
                     break;
                 case 2:
-                    System.out.println("You logged inn!");
+                    animatedPrint("You logged inn!");
                     System.exit(0);
                     break;
                 default:
