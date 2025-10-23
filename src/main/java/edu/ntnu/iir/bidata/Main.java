@@ -2,7 +2,6 @@ package edu.ntnu.iir.bidata;
 
 import java.util.Scanner;
 
-import edu.ntnu.iir.bidata.Pages.HomePage;
 import edu.ntnu.iir.bidata.Pages.LoginPage;
 import edu.ntnu.iir.bidata.Pages.WelcomePage;
 
@@ -18,7 +17,6 @@ public class Main {
                 case -1 -> currentPage * -1;
                 case 0 -> WelcomePage.page();
                 case 1 -> LoginPage.login(scanner);
-                case 2 -> HomePage.home(scanner);
                 default -> 0;
 
             };

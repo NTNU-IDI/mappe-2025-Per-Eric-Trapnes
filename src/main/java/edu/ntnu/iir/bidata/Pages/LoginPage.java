@@ -11,6 +11,8 @@ import edu.ntnu.iir.bidata.Manager.UIManager;
 
 public class LoginPage {
     public static int login(Scanner scanner) {
+        String filePath = "src\\main\\java\\edu\\ntnu\\iir\\bidata\\Database\\Username.txt";
+
         UIManager.animatedPrint("Have I seen you before? (Do you have an account. Yes/No): ");
         String userInput = UIManager.exitCheck(scanner.nextLine());
         if (userInput == null) {
@@ -24,7 +26,7 @@ public class LoginPage {
             // Checks the String the user gives and compares with file
             UIManager.animatedPrint("\n\n\nWelcome back!\n");
             try (BufferedReader bufferedReader = new BufferedReader(
-                    new FileReader("src\\main\\java\\edu\\ntnu\\idi\\idatt\\Username.txt"))) {
+                    new FileReader(filePath))) {
                 String line;
                 UIManager.animatedPrint("Username: ");
 
@@ -37,8 +39,9 @@ public class LoginPage {
 
                 while ((line = bufferedReader.readLine()) != null) {
                     if (line.contains(username)) {
-                        UIManager.animatedPrint("You got a account!\n");
-                        return 1;
+                        System.out.println("");
+                        HomePage.home(scanner, username);
+                        return -1;
                     } else {
                         UIManager.animatedPrint("Sorry, that account does not exist.\n");
                         return 0;
@@ -52,10 +55,11 @@ public class LoginPage {
         } else if (userInput.equalsIgnoreCase("No")) {
             // Writes the username given to the 'Username.txt' file.
             // OBS can only store 1 username with currect implimentation
-            UIManager.animatedPrint("Love meating new people. What's your name?\n");
+            UIManager.animatedPrint("Love meeting new people. What's your name?\n");
             UIManager.animatedPrint("Username: ");
 
             String username = UIManager.exitCheck(scanner.nextLine());
+
             if (username == null) {
                 return 0;
             } else if (username.equalsIgnoreCase("back")) {
@@ -63,9 +67,11 @@ public class LoginPage {
             }
 
             try (BufferedWriter bufferedWriter = new BufferedWriter(
-                    new FileWriter("src\\main\\java\\edu\\ntnu\\idi\\idatt\\Username.txt"))) {
+                    new FileWriter(filePath))) {
                 bufferedWriter.write(username);
                 UIManager.animatedPrint("Saved successfully!");
+
+                HomePage.home(scanner, username);
                 return -1;
 
             } catch (IOException errorMessage) {

@@ -1,0 +1,24 @@
+[
+  {
+    "UID": "eric",
+    "Pages": [
+      "Home",
+      "About",
+      "Profile"
+    ]
+  },
+  {
+    "UID": "per",
+    "Pages": [
+      "per"
+    ]
+  },
+  {
+    "UID": "pereric",
+    "Pages": [
+      "secret",
+      "secret 2",
+      "aoijrwoi"
+    ]
+  }
+]
