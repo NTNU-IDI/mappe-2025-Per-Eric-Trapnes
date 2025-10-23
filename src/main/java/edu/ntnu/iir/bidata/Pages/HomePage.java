@@ -86,8 +86,14 @@ public class HomePage {
                         PageManager.writePage(scanner, author, authors, file, gson);
                         break;
                     case "3":
-                        UIManager.animatedPrint("\nLogging out... Goodbye, " + UID + "\n");
-                        running = false;
+                        UIManager.animatedPrint("\nAre you sure? (If so type 'yes')\n");
+                        choice = UIManager.exitCheck(scanner.nextLine().trim());
+
+                        if (choice.equalsIgnoreCase("yes")) {
+                            UIManager.animatedPrint("\nLogging out... Goodbye, " + UID + "\n");
+                            running = false;
+                        }
+
                         break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
