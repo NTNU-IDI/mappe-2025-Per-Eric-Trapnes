@@ -80,10 +80,10 @@ public class HomePage {
 
                 switch (choice) {
                     case "1":
-                        PageManager.viewPages(author);
+                        PageManager.viewPages(scanner, author);
                         break;
                     case "2":
-                        PageManager.writePage(scanner, author, authors, file, gson);
+                        PageManager.writePage(scanner, author);
                         break;
                     case "3":
                         UIManager.animatedPrint("\nAre you sure? (If so type 'yes')\n");

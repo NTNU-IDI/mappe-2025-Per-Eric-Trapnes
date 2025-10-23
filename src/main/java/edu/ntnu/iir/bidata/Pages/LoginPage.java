@@ -78,13 +78,12 @@ public class LoginPage {
                 bufferedWriter.write(username);
                 bufferedWriter.newLine(); // ensure separation
                 UIManager.animatedPrint("Saved successfully!\n");
-
-                HomePage.home(scanner, username);
-                return -1;
-
             } catch (IOException errorMessage) {
                 System.err.println("An error occurred while writing to the file: " + errorMessage.getMessage());
+                return 0;
             }
+            HomePage.home(scanner, username);
+            return -1;
         }
 
         return 0;
