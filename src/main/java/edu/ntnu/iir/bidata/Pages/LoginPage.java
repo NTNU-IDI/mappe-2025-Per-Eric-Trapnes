@@ -1,6 +1,4 @@
-package edu.ntnu.idi.idatt.Pages;
-
-import edu.ntnu.idi.idatt.Manager.UIManager;
+package edu.ntnu.iir.bidata.Pages;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,6 +6,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
+
+import edu.ntnu.iir.bidata.Manager.UIManager;
 
 public class LoginPage {
     public static int login(Scanner scanner) {

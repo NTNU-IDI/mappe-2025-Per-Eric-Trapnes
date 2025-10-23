@@ -1,8 +1,8 @@
-package edu.ntnu.idi.idatt.Pages;
+package edu.ntnu.iir.bidata.Pages;
 
 import java.util.Scanner;
 
-import edu.ntnu.idi.idatt.Manager.UIManager;
+import edu.ntnu.iir.bidata.Manager.UIManager;
 
 public class HomePage {
     public static int home(Scanner scanner) {

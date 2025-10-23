@@ -1,10 +1,10 @@
-package edu.ntnu.idi.idatt;
-
-import edu.ntnu.idi.idatt.Pages.WelcomePage;
-import edu.ntnu.idi.idatt.Pages.LoginPage;
-import edu.ntnu.idi.idatt.Pages.HomePage;
+package edu.ntnu.iir.bidata;
 
 import java.util.Scanner;
+
+import edu.ntnu.iir.bidata.Pages.HomePage;
+import edu.ntnu.iir.bidata.Pages.LoginPage;
+import edu.ntnu.iir.bidata.Pages.WelcomePage;
 
 public class Main {
 

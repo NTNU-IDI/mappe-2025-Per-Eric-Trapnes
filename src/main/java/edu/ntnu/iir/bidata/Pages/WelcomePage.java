@@ -1,6 +1,6 @@
-package edu.ntnu.idi.idatt.Pages;
+package edu.ntnu.iir.bidata.Pages;
 
-import edu.ntnu.idi.idatt.Manager.UIManager;
+import edu.ntnu.iir.bidata.Manager.UIManager;
 
 public class WelcomePage {
     public static int page() {

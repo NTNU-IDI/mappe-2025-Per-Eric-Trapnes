@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt.Manager;
+package edu.ntnu.iir.bidata.Manager;
 
 public class UIManager {
     // Handels user input, checks for keyword 'exit'
