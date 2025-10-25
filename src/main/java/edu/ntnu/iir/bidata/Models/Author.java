@@ -5,15 +5,14 @@ import java.util.List;
 
 public class Author {
     private String UID;
-    private List<String> Pages;
+    private List<DiaryPage> Pages;
 
     public Author() {
         this.Pages = new ArrayList<>();
     }
 
-    public Author(String UID, List<String> Pages) {
+    public Author(String UID, List<DiaryPage> Pages) {
         this.UID = UID;
-        // Ensure we always get a mutable copy
         this.Pages = new ArrayList<>(Pages);
     }
 
@@ -25,11 +24,11 @@ public class Author {
         this.UID = UID;
     }
 
-    public List<String> getPages() {
+    public List<DiaryPage> getPages() {
         return Pages;
     }
 
-    public void setPages(List<String> Pages) {
+    public void setPages(List<DiaryPage> Pages) {
         // Always store a mutable list
         this.Pages = new ArrayList<>(Pages);
     }

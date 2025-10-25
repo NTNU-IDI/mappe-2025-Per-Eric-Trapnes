@@ -3,17 +3,19 @@ package edu.ntnu.iir.bidata.Manager;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
 import edu.ntnu.iir.bidata.Models.Author;
+import edu.ntnu.iir.bidata.Models.DiaryPage;
 
 public class PageManager {
 
     // --- Option 1: View and open pages ---
     public static void viewPages(Scanner scanner, Author author) {
         System.out.println("\nPages for " + author.getUID() + ":");
-        List<String> pages = author.getPages();
+        List<DiaryPage> pages = author.getPages();
 
         if (pages == null || pages.isEmpty()) {
             System.out.println("(No pages yet.)");
@@ -21,8 +23,10 @@ public class PageManager {
         }
 
         for (int i = 0; i < pages.size(); i++) {
-            File f = new File(pages.get(i));
-            System.out.println((i + 1) + ". " + f.getName());
+            DiaryPage page = pages.get(i);
+            System.out.println((i + 1) + ". " + page.getDiaryID() +
+                    " (Created: " + page.getCreatedTime() +
+                    (page.getEditedTime().isEmpty() ? "" : ", Edited: " + page.getEditedTime()) + ")");
         }
 
         System.out.print("Enter the number of the page to open (or 0 to cancel): ");
@@ -39,7 +43,10 @@ public class PageManager {
                 return;
             }
 
-            File pageFile = new File(pages.get(choice - 1));
+            DiaryPage selectedPage = pages.get(choice - 1);
+            File pageFile = new File("src/main/java/edu/ntnu/iir/bidata/Database/Pages",
+                    selectedPage.getDiaryID() + ".txt");
+
             if (!pageFile.exists()) {
                 System.out.println("File not found: " + pageFile.getAbsolutePath());
                 return;
@@ -55,6 +62,9 @@ public class PageManager {
 
             System.out.println("File opened in editor. Close the editor when done, then press Enter here...");
             scanner.nextLine(); // wait for Enter
+
+            // Update edited time
+            selectedPage.setEditedTime(LocalDateTime.now().toString());
             UIManager.animatedPrint("file closed by user\n");
 
         } catch (NumberFormatException e) {
@@ -83,16 +93,20 @@ public class PageManager {
             dir.mkdirs();
         }
 
-        File pageFile = new File(dir, author.getUID() + "_" + safeTitle + ".txt");
+        String diaryID = author.getUID() + "_" + safeTitle;
+        File pageFile = new File(dir, diaryID + ".txt");
 
         try {
             if (!pageFile.exists()) {
                 pageFile.createNewFile();
             }
 
-            // Add file path to author's page list if not already present
-            if (!author.getPages().contains(pageFile.getAbsolutePath())) {
-                author.getPages().add(pageFile.getAbsolutePath());
+            // Add DiaryPage object to author's list if not already present
+            boolean exists = author.getPages().stream()
+                    .anyMatch(p -> p.getDiaryID().equals(diaryID));
+            if (!exists) {
+                DiaryPage newPage = new DiaryPage(diaryID, LocalDateTime.now().toString());
+                author.getPages().add(newPage);
             }
 
             if (Desktop.isDesktopSupported()) {
@@ -105,6 +119,13 @@ public class PageManager {
 
             System.out.println("File opened in editor. Close the editor when done, then press Enter here...");
             scanner.nextLine(); // wait for Enter
+
+            // Update edited time
+            author.getPages().stream()
+                    .filter(p -> p.getDiaryID().equals(diaryID))
+                    .findFirst()
+                    .ifPresent(p -> p.setEditedTime(LocalDateTime.now().toString()));
+
             UIManager.animatedPrint("file closed by user\n");
 
         } catch (IOException e) {
