@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import edu.ntnu.iir.bidata.Models.Author;
 import edu.ntnu.iir.bidata.Models.DiaryPage;
+import edu.ntnu.iir.bidata.Models.Time;
 
 public class PageManager {
 
@@ -85,7 +86,7 @@ public class PageManager {
         }
 
         // Sanitize filename
-        String safeTitle = title.replaceAll("[\\\\/:*?\"<>|]", "_");
+        String safeTitle = title.replaceAll("[\\\\/:*?\"<>|] ", "_");
 
         // Create file path inside Database/Pages
         File dir = new File("src/main/java/edu/ntnu/iir/bidata/Database/Pages");
@@ -105,7 +106,7 @@ public class PageManager {
             boolean exists = author.getPages().stream()
                     .anyMatch(p -> p.getDiaryID().equals(diaryID));
             if (!exists) {
-                DiaryPage newPage = new DiaryPage(diaryID, LocalDateTime.now().toString());
+                DiaryPage newPage = new DiaryPage(diaryID, Time.now());
                 author.getPages().add(newPage);
             }
 
@@ -124,7 +125,7 @@ public class PageManager {
             author.getPages().stream()
                     .filter(p -> p.getDiaryID().equals(diaryID))
                     .findFirst()
-                    .ifPresent(p -> p.setEditedTime(LocalDateTime.now().toString()));
+                    .ifPresent(p -> p.setEditedTime(Time.now()));
 
             UIManager.animatedPrint("file closed by user\n");
 
