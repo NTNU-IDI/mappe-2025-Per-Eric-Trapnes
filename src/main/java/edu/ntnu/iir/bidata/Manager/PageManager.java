@@ -82,8 +82,8 @@ public class PageManager {
             Files.writeString(DRAFT_FILE.toPath(), "");
             UIManager.animatedPrint("Changes saved.\n");
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception errorMessage) {
+            errorMessage.printStackTrace();
         }
     }
 
@@ -109,10 +109,15 @@ public class PageManager {
                 encryptedFile.createNewFile();
             }
 
-            boolean exists = author.getPages().stream().anyMatch(p -> p.getDiaryID(UID).equals(diaryID));
-            if (!exists) {
-                DiaryPage newPage = new DiaryPage(UID, encryptedDiaryID, Time.now());
-                author.getPages().add(newPage);
+            try {
+                boolean exists = author.getPages().stream().anyMatch(p -> p.getDiaryID(UID).equals(diaryID));
+                if (!exists) {
+                    DiaryPage newPage = new DiaryPage(UID, encryptedDiaryID, Time.now());
+                    author.getPages().add(newPage);
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
 
             // Start with empty draft
@@ -134,11 +139,12 @@ public class PageManager {
                     .ifPresent(p -> p.setEditedTime(UID, Time.now()));
 
             FileManager.saveAuthor(author);
+
             Files.writeString(DRAFT_FILE.toPath(), "");
             UIManager.animatedPrint("Page saved.\n");
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception errorMessage) {
+            errorMessage.printStackTrace();
         }
     }
 }

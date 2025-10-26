@@ -24,14 +24,17 @@ public class UIManager {
         return command;
     }
 
-    public static void animatedPrint(String str) {
-        for (int i = 0; i < str.length(); i++) {
-            System.out.print(str.charAt(i));
-            try {
-                Thread.sleep(30);
-            } catch (InterruptedException errorMessage) {
-                errorMessage.printStackTrace();
+    public static void animatedPrint(String string) {
+
+        try {
+            for (int i = 0; i < string.length(); i++) {
+                System.out.print(string.charAt(i));
+                Thread.sleep(20);
             }
+
+        } catch (InterruptedException errorMessage) {
+            errorMessage.printStackTrace();
         }
+
     }
 }
