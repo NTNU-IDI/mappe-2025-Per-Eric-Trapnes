@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Time {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("EEEE,MMMM dd HH:mm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("EE, MMMM dd yyyy HH:mm");
 
     public static String now() {
 

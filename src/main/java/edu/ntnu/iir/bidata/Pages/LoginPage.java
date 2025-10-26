@@ -1,19 +1,23 @@
 package edu.ntnu.iir.bidata.Pages;
 
+import edu.ntnu.iir.bidata.Manager.EncryptionManager;
+import edu.ntnu.iir.bidata.Manager.FileManager;
+import edu.ntnu.iir.bidata.Manager.UIManager;
+import edu.ntnu.iir.bidata.Models.Author;
+
+import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import edu.ntnu.iir.bidata.Manager.UIManager;
-
 public class LoginPage {
 
-    private static final String filePath = "src\\main\\java\\edu\\ntnu\\iir\\bidata\\Database\\Username.txt";
+    private static final String usernameFile = "src/main/java/edu/ntnu/iir/bidata/Database/Username.txt";
 
     public static int login(Scanner scanner) {
         UIManager.animatedPrint("Have I seen you before? (Do you have an account. Yes/No): ");
@@ -23,100 +27,145 @@ public class LoginPage {
         if (userInput.equalsIgnoreCase("back"))
             return -1;
 
-        // Load all usernames from file
-        List<String> usernames = loadUsernames();
+        List<Author> authors;
+        try {
+            authors = FileManager.loadAuthors();
+            List<String> usernames = loadUsernames();
 
-        // If has account
-        if (userInput.equalsIgnoreCase("Yes")) {
-            UIManager.animatedPrint("\n\n\nWelcome back!\n");
+            // --- Existing account ---
+            if (userInput.equalsIgnoreCase("Yes")) {
+                UIManager.animatedPrint("\n\n\nWelcome back!\n");
 
-            if (usernames.isEmpty()) {
-                UIManager.animatedPrint("No accounts exist yet.\n");
-                return 0;
-            } else {
+                if (usernames.isEmpty()) {
+                    UIManager.animatedPrint("No accounts exist yet.\n");
+                    return 0;
+                }
+
                 UIManager.animatedPrint("Existing accounts:\n");
                 for (String name : usernames) {
                     UIManager.animatedPrint("- " + name + "\n");
                 }
+
+                UIManager.animatedPrint("Username: ");
+                String username = normalize(UIManager.exitCheck(scanner.nextLine()));
+                if (username == null)
+                    return 0;
+                if (username.equalsIgnoreCase("back"))
+                    return -1;
+
+                if (!containsIgnoreCase(usernames, username)) {
+                    UIManager.animatedPrint("Sorry, that account does not exist.\n");
+                    return 0;
+                }
+
+                // Ask for password
+                UIManager.animatedPrint("Password: ");
+                String password = UIManager.exitCheck(scanner.nextLine());
+                if (password == null)
+                    return 0;
+
+                // Verify against Users.json
+                for (Author author : authors) {
+                    try {
+                        String decrypted = EncryptionManager.decrypt(author.getUID(), username + ":" + password);
+                        if (decrypted.equals(username)) {
+                            UIManager.animatedPrint("Welcome back, " + username + "!\n");
+                            HomePage.home(scanner, username, password);
+                            return -1;
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                UIManager.animatedPrint("Incorrect password.\n");
+                return 0;
+
+                // --- New yaccount ---
+            } else if (userInput.equalsIgnoreCase("No")) {
+                UIManager.animatedPrint("Love meeting new people. What's your name?\n");
+                UIManager.animatedPrint("Username: ");
+                String username = normalize(UIManager.exitCheck(scanner.nextLine()));
+                if (username == null)
+                    return 0;
+                if (username.equalsIgnoreCase("back"))
+                    return -1;
+
+                if (containsIgnoreCase(usernames, username)) {
+                    UIManager.animatedPrint("That username is already taken. Please choose another.\n");
+                    return 0;
+                }
+
+                // Ask for password twice
+                UIManager.animatedPrint("Password: ");
+                String password1 = UIManager.exitCheck(scanner.nextLine());
+                if (password1 == null)
+                    return 0;
+
+                UIManager.animatedPrint("Retype password: ");
+                String password2 = UIManager.exitCheck(scanner.nextLine());
+                if (password2 == null)
+                    return 0;
+
+                if (!password1.equals(password2)) {
+                    UIManager.animatedPrint("Passwords do not match.\n");
+                    return 0;
+                }
+
+                try {
+                    // Encrypt UID with username+password
+                    String encryptedUID = EncryptionManager.encrypt(username, username + ":" + password1);
+
+                    // Save to Users.json
+                    Author newAuthor = new Author(encryptedUID);
+                    authors.add(newAuthor);
+                    FileManager.saveAuthors(authors);
+
+                    // Save plain username to Username.txt
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(usernameFile, true))) {
+                        writer.write(username);
+                        writer.newLine();
+                    }
+
+                    UIManager.animatedPrint("Account created successfully!\n");
+                    HomePage.home(scanner, username, password1);
+                    return -1;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return 0;
+                }
             }
 
-            UIManager.animatedPrint("Username: ");
-            String username = normalize(UIManager.exitCheck(scanner.nextLine()));
-            if (username == null)
-                return 0;
-            if (username.equalsIgnoreCase("back"))
-                return -1;
+            return 0;
 
-            if (containsIgnoreCase(usernames, username)) {
-                UIManager.animatedPrint("Welcome back, " + username + "!\n");
-                HomePage.home(scanner, username);
-                return -1;
-            } else {
-                UIManager.animatedPrint("Sorry, that account does not exist.\n");
-                return 0;
-            }
-
-            // If does not have account
-        } else if (userInput.equalsIgnoreCase("No")) {
-            UIManager.animatedPrint("Love meeting new people. What's your name?\n");
-            UIManager.animatedPrint("Username: ");
-
-            String username = normalize(UIManager.exitCheck(scanner.nextLine()));
-            if (username == null)
-                return 0;
-            if (username.equalsIgnoreCase("back"))
-                return -1;
-
-            // Check if username already exists
-            if (containsIgnoreCase(usernames, username)) {
-                UIManager.animatedPrint("That username is already taken. Please choose another.\n");
-                return 0;
-            }
-
-            // Append new username to file
-            try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath, true))) {
-                bufferedWriter.write(username);
-                bufferedWriter.newLine(); // ensure separation
-                UIManager.animatedPrint("Saved successfully!\n");
-            } catch (IOException errorMessage) {
-                System.err.println("An error occurred while writing to the file: " + errorMessage.getMessage());
-                return 0;
-            }
-            HomePage.home(scanner, username);
-            return -1;
+        } catch (IOException errorMessage) {
+            errorMessage.printStackTrace();
         }
-
         return 0;
     }
 
-    // Helper method to load usernames into a list
     private static List<String> loadUsernames() {
         List<String> usernames = new ArrayList<>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(usernameFile))) {
             String line;
-            while ((line = bufferedReader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
                     usernames.add(line.trim());
                 }
             }
-        } catch (IOException e) {
-            // If file doesn't exist yet, just return empty list
+        } catch (IOException ignored) {
         }
         return usernames;
     }
 
-    // Normalize input (trim whitespace)
-    private static String normalize(String input) {
-        return input == null ? null : input.trim();
-    }
-
-    // Case-insensitive contains check
     private static boolean containsIgnoreCase(List<String> list, String value) {
         for (String s : list) {
-            if (s.equalsIgnoreCase(value)) {
+            if (s.equalsIgnoreCase(value))
                 return true;
-            }
         }
         return false;
+    }
+
+    private static String normalize(String input) {
+        return input == null ? null : input.trim();
     }
 }

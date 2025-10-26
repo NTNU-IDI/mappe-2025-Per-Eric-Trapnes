@@ -2,65 +2,58 @@ package edu.ntnu.iir.bidata.Manager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import edu.ntnu.iir.bidata.Models.Author;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import edu.ntnu.iir.bidata.Models.Author;
-
 public class FileManager {
-    public static Author findAuthor(String UID) throws IOException {
+    private static final File jsonFile = new File("src/main/java/edu/ntnu/iir/bidata/Database/Users.JSON");
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        Author author = new Author(UID, new ArrayList<>());
-        String filePath = "src/main/java/edu/ntnu/iir/bidata/Database/Users.JSON";
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        File file = new File(filePath);
-
-        File parentDir = file.getParentFile();
-        if (parentDir != null && !parentDir.exists()) {
-            parentDir.mkdirs();
+    public static List<Author> loadAuthors() throws IOException {
+        if (!jsonFile.exists() || jsonFile.length() == 0)
+            return new ArrayList<>();
+        try (Reader reader = new FileReader(jsonFile)) {
+            Author[] array = gson.fromJson(reader, Author[].class);
+            return array == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(array));
         }
-
-        List<Author> authors = new ArrayList<>();
-
-        // Load existing data if file has content
-        if (file.exists() && file.length() > 0) {
-            Reader reader = new FileReader(file);
-            Author[] existing = gson.fromJson(reader, Author[].class);
-            reader.close();
-
-            if (existing != null) {
-                authors.addAll(Arrays.asList(existing));
-            }
-        }
-
-        // Check if UID exists
-        boolean found = false;
-        for (Author a : authors) {
-            if (a.getUID().equals(UID)) {
-                author = a;
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            authors.add(author);
-        }
-
-        // Save updated data
-        Writer writer = new FileWriter(file);
-        gson.toJson(authors, writer);
-        writer.close();
-        return author;
     }
 
+    public static Author findAuthor(String UID) throws IOException {
+        List<Author> authors = loadAuthors();
+        for (Author author : authors) {
+            if (author.getUID().equals(UID))
+                return author;
+        }
+        Author newAuthor = new Author(UID);
+        authors.add(newAuthor);
+        saveAuthors(authors);
+        return newAuthor;
+    }
+
+    public static void saveAuthors(List<Author> authors) throws IOException {
+        try (FileWriter writer = new FileWriter(jsonFile)) {
+            gson.toJson(authors, writer);
+        }
+    }
+
+    public static void saveAuthor(Author updatedAuthor) throws IOException {
+        List<Author> authors = loadAuthors();
+        for (int i = 0; i < authors.size(); i++) {
+            if (authors.get(i).getUID().equals(updatedAuthor.getUID())) {
+                authors.set(i, updatedAuthor);
+                saveAuthors(authors);
+                return;
+            }
+        }
+        authors.add(updatedAuthor);
+        saveAuthors(authors);
+    }
 }

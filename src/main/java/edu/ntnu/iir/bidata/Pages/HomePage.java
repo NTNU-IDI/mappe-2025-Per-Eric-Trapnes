@@ -1,9 +1,9 @@
 package edu.ntnu.iir.bidata.Pages;
 
+import edu.ntnu.iir.bidata.Manager.EncryptionManager;
 import edu.ntnu.iir.bidata.Manager.FileManager;
 import edu.ntnu.iir.bidata.Manager.PageManager;
 import edu.ntnu.iir.bidata.Manager.UIManager;
-import edu.ntnu.iir.bidata.Models.Author;
 
 import java.io.IOException;
 
@@ -11,11 +11,13 @@ import java.util.Scanner;
 
 public class HomePage {
 
-    public static void home(Scanner scanner, String UID) {
-        UIManager.animatedPrint("\n\n\n\n\n\n\nLovely to see you " + UID + "\n\n");
+    public static void home(Scanner scanner, String username, String password) {
+
+        UIManager.animatedPrint("\n\n\n\n\n\n\nLovely to see you " + username + "\n\n");
 
         try {
-            Author author = FileManager.findAuthor(UID);
+            String UID = EncryptionManager.encrypt(username, username + ":" + password);
+            FileManager.findAuthor(UID);
 
             // Menu loop
             boolean running = true;
@@ -30,17 +32,17 @@ public class HomePage {
 
                 switch (choice) {
                     case "1":
-                        PageManager.viewPages(scanner, author);
+                        PageManager.viewPages(scanner, username, UID);
                         break;
                     case "2":
-                        PageManager.writePage(scanner, author);
+                        PageManager.writePage(scanner, username, UID);
                         break;
                     case "3":
                         UIManager.animatedPrint("\nAre you sure? (If so type 'yes')\n");
                         choice = UIManager.exitCheck(scanner.nextLine().trim());
 
                         if (choice.equalsIgnoreCase("yes")) {
-                            UIManager.animatedPrint("\nLogging out... Goodbye, " + UID + "\n");
+                            UIManager.animatedPrint("\nLogging out... Goodbye, " + username + "\n");
                             running = false;
                         }
 
@@ -50,8 +52,10 @@ public class HomePage {
                 }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException errorMessage) {
+            errorMessage.printStackTrace();
+        } catch (Exception errorMessage) {
+            errorMessage.printStackTrace();
         }
     }
 }

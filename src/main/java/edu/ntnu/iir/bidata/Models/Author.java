@@ -7,7 +7,8 @@ public class Author {
     private String UID;
     private List<DiaryPage> Pages;
 
-    public Author() {
+    public Author(String UID) {
+        this.UID = UID;
         this.Pages = new ArrayList<>();
     }
 
