@@ -9,9 +9,6 @@
     <artifactId>Main</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <modules>
-        <module>demo</module>
-    </modules>
 
     <name>Digital diary</name>
 
