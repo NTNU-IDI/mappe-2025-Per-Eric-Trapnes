@@ -2,8 +2,13 @@ package edu.ntnu.iir.bidata.Manager;
 
 import java.awt.Desktop;
 import java.io.File;
+
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+
+import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 import edu.ntnu.iir.bidata.Models.Author;
@@ -48,20 +53,22 @@ public class PageManager {
             }
 
             DiaryPage selectedPage = pages.get(choice - 1);
-            File encryptedFile = new File(PAGES_DIR,
-                    EncryptionManager.encrypt(selectedPage.getDiaryID(UID), UID) + ".txt");
 
+            // Use the same Base64-safe scheme as writePage
+            String encryptedDiaryID = EncryptionManager.encrypt(selectedPage.getDiaryID(UID), UID);
+            String safeEncryptedID = Base64.getUrlEncoder().encodeToString(
+                    encryptedDiaryID.getBytes(StandardCharsets.UTF_8));
+
+            File encryptedFile = new File(PAGES_DIR, safeEncryptedID + ".txt");
             if (!encryptedFile.exists()) {
                 System.out.println("File not found: " + encryptedFile.getAbsolutePath());
                 return;
             }
 
-            // Decrypt into draft
             String encryptedContent = Files.readString(encryptedFile.toPath());
             String decryptedContent = EncryptionManager.decrypt(encryptedContent, UID);
             Files.writeString(DRAFT_FILE.toPath(), decryptedContent);
 
-            // Open draft
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().edit(DRAFT_FILE);
             } else {
@@ -72,7 +79,6 @@ public class PageManager {
             System.out.println("Draft opened. Press Enter in terminal when done editing...");
             scanner.nextLine();
 
-            // Read draft, encrypt, save back
             String newContent = Files.readString(DRAFT_FILE.toPath());
             String reEncrypted = EncryptionManager.encrypt(newContent, UID);
             Files.writeString(encryptedFile.toPath(), reEncrypted);
@@ -91,6 +97,9 @@ public class PageManager {
     public static void writePage(Scanner scanner, String username, String UID) {
         try {
             Author author = FileManager.findAuthor(UID);
+            if (author == null) {
+                throw new IllegalStateException("No author found for UID: " + UID);
+            }
 
             UIManager.animatedPrint("Enter a title for your new page: ");
             String title = UIManager.exitCheck(scanner.nextLine().trim());
@@ -103,48 +112,50 @@ public class PageManager {
 
             String diaryID = username + "_" + safeTitle;
             String encryptedDiaryID = EncryptionManager.encrypt(diaryID, UID);
-            File encryptedFile = new File(PAGES_DIR, encryptedDiaryID + ".txt");
 
-            if (!encryptedFile.exists()) {
+            // Always encode for filename safety
+            String safeEncryptedID = Base64.getUrlEncoder().encodeToString(
+                    encryptedDiaryID.getBytes(StandardCharsets.UTF_8));
+
+            File encryptedFile = new File(PAGES_DIR, safeEncryptedID + ".txt");
+            if (!encryptedFile.exists())
                 encryptedFile.createNewFile();
+
+            boolean exists = author.getPages().stream()
+                    .anyMatch(p -> Objects.equals(p.getDiaryID(UID), diaryID));
+            if (!exists) {
+                DiaryPage newPage = new DiaryPage(UID, encryptedDiaryID, Time.now());
+                author.getPages().add(newPage);
             }
 
-            try {
-                boolean exists = author.getPages().stream().anyMatch(p -> p.getDiaryID(UID).equals(diaryID));
-                if (!exists) {
-                    DiaryPage newPage = new DiaryPage(UID, encryptedDiaryID, Time.now());
-                    author.getPages().add(newPage);
-                }
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
-            // Start with empty draft
+            if (!DRAFT_FILE.exists())
+                DRAFT_FILE.createNewFile();
             Files.writeString(DRAFT_FILE.toPath(), "");
 
-            // Open draft
-            Desktop.getDesktop().edit(DRAFT_FILE);
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().edit(DRAFT_FILE);
+            } else {
+                System.out.println("Desktop editing not supported. Please edit " + DRAFT_FILE.getAbsolutePath());
+            }
+
             System.out.println("\nDraft opened. Press Enter in terminal when done...");
             scanner.nextLine();
 
-            // Read draft, encrypt, save into encrypted file
             String content = Files.readString(DRAFT_FILE.toPath());
             String encryptedContent = EncryptionManager.encrypt(content, UID);
             Files.writeString(encryptedFile.toPath(), encryptedContent);
 
             author.getPages().stream()
-                    .filter(p -> p.getDiaryID(UID).equals(diaryID))
+                    .filter(p -> Objects.equals(p.getDiaryID(UID), diaryID))
                     .findFirst()
                     .ifPresent(p -> p.setEditedTime(UID, Time.now()));
 
             FileManager.saveAuthor(author);
-
             Files.writeString(DRAFT_FILE.toPath(), "");
             UIManager.animatedPrint("Page saved.\n");
 
-        } catch (Exception errorMessage) {
-            errorMessage.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
