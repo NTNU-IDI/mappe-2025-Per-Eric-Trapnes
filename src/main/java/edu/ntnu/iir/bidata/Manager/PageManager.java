@@ -42,7 +42,19 @@ public class PageManager {
             System.out.print("Enter the number of the page to open (or 0 to cancel): ");
             String input = UIManager.exitCheck(scanner.nextLine().trim());
 
-            int choice = Integer.parseInt(input);
+            if (input == null || input.isEmpty()) {
+                System.out.println("No input detected. Cancelled.");
+                return;
+            }
+
+            int choice;
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                return;
+            }
+
             if (choice == 0) {
                 System.out.println("Cancelled.");
                 return;
@@ -103,7 +115,7 @@ public class PageManager {
 
             UIManager.animatedPrint("Enter a title for your new page: ");
             String title = UIManager.exitCheck(scanner.nextLine().trim());
-            if (title == null || title.equalsIgnoreCase("back"))
+            if (title == "" || title.equalsIgnoreCase("back"))
                 return;
 
             String safeTitle = title.replaceAll("[\\\\/:*?\"<>| ]+", "_");
@@ -156,8 +168,8 @@ public class PageManager {
             Files.writeString(DRAFT_FILE.toPath(), "");
             UIManager.animatedPrint("Page saved.\n");
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception errorMessage) {
+            errorMessage.printStackTrace();
         }
     }
 

@@ -9,12 +9,12 @@ public class UIManager {
     public static String exitCheck(String command, int maxLength) {
         if (command.length() > maxLength) {
             System.out.println("ERROR: String length exceeds the maximum allowed length of " + 32);
-            return null;
+            return "";
 
         }
         if (command.isEmpty()) {
             System.out.println("ERROR: Entered an empty string");
-            return null;
+            return "";
 
         }
         if (command.equalsIgnoreCase("exit")) {

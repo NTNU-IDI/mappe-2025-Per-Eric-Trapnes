@@ -19,7 +19,6 @@ public class HomePage {
             String UID = EncryptionManager.encrypt(username, username + ":" + password);
             FileManager.findAuthor(UID);
 
-            // Menu loop
             boolean running = true;
             while (running) {
                 UIManager.animatedPrint("\n==== HOME MENU ====\n");
@@ -29,33 +28,46 @@ public class HomePage {
                 UIManager.animatedPrint("Enter your choice: ");
 
                 String choice = UIManager.exitCheck(scanner.nextLine().trim());
+                if (choice.isEmpty()) {
+                    UIManager.animatedPrint("No input detected. Please enter a number.\n");
+                    continue;
+                }
 
                 switch (choice) {
                     case "1":
                         PageManager.viewPages(scanner, username, UID);
                         break;
+
                     case "2":
                         PageManager.writePage(scanner, username, UID, false);
                         break;
+
                     case "3":
                         UIManager.animatedPrint("\nAre you sure? (If so type 'yes')\n");
-                        choice = UIManager.exitCheck(scanner.nextLine().trim());
-
-                        if (choice.equalsIgnoreCase("yes")) {
-                            UIManager.animatedPrint("\nLogging out... Goodbye, " + username + "\n");
-                            running = false;
+                        String confirm = scanner.nextLine().trim();
+                        if (confirm.isEmpty()) {
+                            UIManager.animatedPrint("No input. Logout cancelled.\n");
+                            break;
                         }
 
+                        if (confirm.equalsIgnoreCase("yes")) {
+                            UIManager.animatedPrint("\nLogging out... Goodbye, " + username + "\n");
+                            running = false;
+                        } else {
+                            UIManager.animatedPrint("Logout cancelled.\n");
+                        }
                         break;
+
                     default:
-                        System.out.println("Invalid choice. Please try again.");
+                        UIManager.animatedPrint("Invalid choice. Please try again.\n");
                 }
             }
 
-        } catch (IOException errorMessage) {
-            errorMessage.printStackTrace();
-        } catch (Exception errorMessage) {
-            errorMessage.printStackTrace();
+        } catch (IOException | RuntimeException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 }
