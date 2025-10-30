@@ -1,30 +1,35 @@
-[//]: # (TODO: Fill inn your name and student ID)
 
-STUDENT NAME = "Your name"  
-STUDENT ID = "Your ID"
+STUDENT NAME = "Per Eric Trapnes"  
+STUDENT ID = "107013"
 
 ## Project description
 
-[//]: # (TODO: Write a short description of your project/product here.)
+In this project we create a digital diary. A diary is often depicted as the one place you can write all your secrets. Secret crushes, passwords or maybe recipes. Thats why the diary needs to be encrypted, password protected and at least have some safety measures implimented. So you can store your secrets like any other diary.
 
 ## Project structure
 
-[//]: # (TODO: Describe the structure of your project here. How have you used packages in your structure. Where are all sourcefiles stored. Where are all JUnit-test classes stored. etc.)
+All source code is under src/main/java, with tests in src/test/java. The project is organized into clear packages:
+1. Core logic (e.g., PageManager, FileManager, EncryptionManager).
+2. User Interface UI classes (HomePage, LoginPage, MainPage, RegisterPage).
+3. Data classes (Author, DiaryPage, Time).
+4. Handles persistence of user data in JSON.
+5. Stores encrypted diary entries (.txt files) and temporary draft.txt.
+Design rationale:
+Separation of concerns keeps UI, logic, and data models independent. All diary content is encrypted and stored with safe filenames, ensuring both usability and privacy
+
 
 ## Link to repository
 
-[//]: # (TODO: Include a link to your GitHub repository here.)
+https://github.com/NTNU-IDI/mappe-2025-Per-Eric-Trapnes
 
 ## How to run the project
 
-[//]: # (TODO: Describe how to run your project here. What is the main class? What is the main method?
-What is the input and output of the program? What is the expected behaviour of the program?)
+What is the input and output of the program? What is the expected behaviour of the program?
 
 ## How to run the tests
 
-[//]: # (TODO: Describe how to run the tests here.)
+Run via your IDE or mvn compile exec:java
 
 ## References
 
-[//]: # (TODO: Include references here, if any. For example, if you have used code from the course book, include a reference to the chapter.
-Or if you have used code from a website or other source, include a link to the source.)
+All code is writen by me with Chat-GPT explaining consepts that are outside my scope.
