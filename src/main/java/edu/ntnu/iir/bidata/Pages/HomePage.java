@@ -35,7 +35,7 @@ public class HomePage {
                         PageManager.viewPages(scanner, username, UID);
                         break;
                     case "2":
-                        PageManager.writePage(scanner, username, UID);
+                        PageManager.writePage(scanner, username, UID, false);
                         break;
                     case "3":
                         UIManager.animatedPrint("\nAre you sure? (If so type 'yes')\n");

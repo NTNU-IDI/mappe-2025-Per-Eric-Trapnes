@@ -1,4 +1,4 @@
-package edu.ntnu.idi.idatt;
+package edu.ntnu.iir.bidata;
 
 import java.util.Scanner;
 

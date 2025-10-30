@@ -20,7 +20,7 @@ public class EncryptionManager {
         return Base64.getEncoder().encodeToString(cipherBytes);
     }
 
-    // Decrypts a Base64(ciphertext) string using keyword.
+    // Decrypts a Base64(ciphertext) string usingy keyword.
     public static String decrypt(String encodedCipher, String keyword) throws Exception {
         byte[] cipherBytes = Base64.getDecoder().decode(encodedCipher);
 

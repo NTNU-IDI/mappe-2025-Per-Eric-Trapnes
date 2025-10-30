@@ -17,8 +17,8 @@ import edu.ntnu.iir.bidata.Models.Time;
 
 public class PageManager {
 
-    private static final File PAGES_DIR = new File("src/main/java/edu/ntnu/iir/bidata/Database/Pages");
-    private static final File DRAFT_FILE = new File(PAGES_DIR, "draft.txt");
+    private static File PAGES_DIR = new File("src/main/java/edu/ntnu/iir/bidata/Database/Pages");
+    private static File DRAFT_FILE = new File(PAGES_DIR, "draft.txt");
 
     // --- Option 1: View and open pages ---
     public static void viewPages(Scanner scanner, String username, String UID) {
@@ -94,7 +94,7 @@ public class PageManager {
     }
 
     // --- Option 2: Write a new page ---
-    public static void writePage(Scanner scanner, String username, String UID) {
+    public static void writePage(Scanner scanner, String username, String UID, boolean skipEditor) {
         try {
             Author author = FileManager.findAuthor(UID);
             if (author == null) {
@@ -112,8 +112,6 @@ public class PageManager {
 
             String diaryID = username + "_" + safeTitle;
             String encryptedDiaryID = EncryptionManager.encrypt(diaryID, UID);
-
-            // Always encode for filename safety
             String safeEncryptedID = Base64.getUrlEncoder().encodeToString(
                     encryptedDiaryID.getBytes(StandardCharsets.UTF_8));
 
@@ -132,14 +130,18 @@ public class PageManager {
                 DRAFT_FILE.createNewFile();
             Files.writeString(DRAFT_FILE.toPath(), "");
 
-            if (Desktop.isDesktopSupported()) {
-                Desktop.getDesktop().edit(DRAFT_FILE);
+            if (skipEditor) {
+                // For testing: inject dummy content
+                Files.writeString(DRAFT_FILE.toPath(), "This is test content.");
             } else {
-                System.out.println("Desktop editing not supported. Please edit " + DRAFT_FILE.getAbsolutePath());
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().edit(DRAFT_FILE);
+                } else {
+                    System.out.println("Desktop editing not supported. Please edit " + DRAFT_FILE.getAbsolutePath());
+                }
+                System.out.println("\nDraft opened. Press Enter in terminal when done...");
+                scanner.nextLine();
             }
-
-            System.out.println("\nDraft opened. Press Enter in terminal when done...");
-            scanner.nextLine();
 
             String content = Files.readString(DRAFT_FILE.toPath());
             String encryptedContent = EncryptionManager.encrypt(content, UID);
@@ -158,4 +160,13 @@ public class PageManager {
             e.printStackTrace();
         }
     }
+
+    public static void setPagesDir(File dir) {
+        PAGES_DIR = dir;
+    }
+
+    public static void setDraftFile(File file) {
+        DRAFT_FILE = file;
+    }
+
 }
