@@ -66,7 +66,6 @@ public class PageManager {
 
             DiaryPage selectedPage = pages.get(choice - 1);
 
-            // Use the same Base64-safe scheme as writePage
             String encryptedDiaryID = EncryptionManager.encrypt(selectedPage.getDiaryID(UID), UID);
             String safeEncryptedID = Base64.getUrlEncoder().encodeToString(
                     encryptedDiaryID.getBytes(StandardCharsets.UTF_8));
@@ -106,7 +105,7 @@ public class PageManager {
     }
 
     // --- Option 2: Write a new page ---
-    public static void writePage(Scanner scanner, String username, String UID, boolean skipEditor) {
+    public static void writePage(Scanner scanner, String username, String UID) {
         try {
             Author author = FileManager.findAuthor(UID);
             if (author == null) {
@@ -115,7 +114,7 @@ public class PageManager {
 
             UIManager.animatedPrint("Enter a title for your new page: ");
             String title = UIManager.exitCheck(scanner.nextLine().trim());
-            if (title == "" || title.equalsIgnoreCase("back"))
+            if (title == null || title.equalsIgnoreCase("back"))
                 return;
 
             String safeTitle = title.replaceAll("[\\\\/:*?\"<>| ]+", "_");
@@ -142,18 +141,13 @@ public class PageManager {
                 DRAFT_FILE.createNewFile();
             Files.writeString(DRAFT_FILE.toPath(), "");
 
-            if (skipEditor) {
-                // For testing: inject dummy content
-                Files.writeString(DRAFT_FILE.toPath(), "This is test content.");
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().edit(DRAFT_FILE);
             } else {
-                if (Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().edit(DRAFT_FILE);
-                } else {
-                    System.out.println("Desktop editing not supported. Please edit " + DRAFT_FILE.getAbsolutePath());
-                }
-                System.out.println("\nDraft opened. Press Enter in terminal when done...");
-                scanner.nextLine();
+                System.out.println("Desktop editing not supported. Please edit " + DRAFT_FILE.getAbsolutePath());
             }
+            System.out.println("\nDraft opened. Press Enter in terminal when done...");
+            scanner.nextLine();
 
             String content = Files.readString(DRAFT_FILE.toPath());
             String encryptedContent = EncryptionManager.encrypt(content, UID);
@@ -170,6 +164,82 @@ public class PageManager {
 
         } catch (Exception errorMessage) {
             errorMessage.printStackTrace();
+        }
+    }
+
+    public static void deletePage(Scanner scanner, String username, String UID) {
+        try {
+            Author author = FileManager.findAuthor(UID);
+            List<DiaryPage> pages = author.getPages();
+
+            System.out.println("\nPages for " + username + ":");
+            if (pages == null || pages.isEmpty()) {
+                System.out.println("(No pages yet.)");
+                return;
+            }
+
+            for (int i = 0; i < pages.size(); i++) {
+                DiaryPage page = pages.get(i);
+                System.out.println((i + 1) + ". " + page.getDiaryID(UID) +
+                        " (Created: " + page.getCreatedTime(UID) +
+                        (page.getEditedTime(UID).isEmpty() ? "" : ", Edited: " + page.getEditedTime(UID)) + ")");
+            }
+
+            System.out.print("Enter the number of the page to delete (or 0 to cancel): ");
+            String input = UIManager.exitCheck(scanner.nextLine().trim());
+
+            if (input == null || input.isEmpty()) {
+                System.out.println("No input detected. Cancelled.");
+                return;
+            }
+
+            int choice;
+            try {
+                choice = Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                return;
+            }
+
+            if (choice == 0) {
+                System.out.println("Cancelled.");
+                return;
+            }
+            if (choice < 1 || choice > pages.size()) {
+                System.out.println("Invalid choice.");
+                return;
+            }
+
+            DiaryPage selectedPage = pages.get(choice - 1);
+
+            // ✅ Build file name exactly like in viewPages()
+            String encryptedDiaryID = EncryptionManager.encrypt(selectedPage.getDiaryID(UID), UID);
+            String safeEncryptedID = Base64.getUrlEncoder().encodeToString(
+                    encryptedDiaryID.getBytes(StandardCharsets.UTF_8));
+            File encryptedFile = new File(PAGES_DIR, safeEncryptedID + ".txt");
+
+            // Confirm deletion
+            System.out.print("Are you sure you want to delete '" + selectedPage.getDiaryID(UID) + "'? (yes/no): ");
+            String confirm = scanner.nextLine().trim();
+            if (!confirm.equalsIgnoreCase("yes")) {
+                System.out.println("Delete cancelled.");
+                return;
+            }
+
+            boolean fileDeleted = encryptedFile.exists() && encryptedFile.delete();
+
+            // Remove page from author
+            pages.remove(selectedPage);
+            FileManager.saveAuthor(author);
+
+            if (fileDeleted) {
+                UIManager.animatedPrint("Page deleted successfully.\n");
+            } else {
+                UIManager.animatedPrint("Page metadata removed, but file could not be deleted.\n");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

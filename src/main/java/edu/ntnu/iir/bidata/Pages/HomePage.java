@@ -6,14 +6,13 @@ import edu.ntnu.iir.bidata.Manager.PageManager;
 import edu.ntnu.iir.bidata.Manager.UIManager;
 
 import java.io.IOException;
-
 import java.util.Scanner;
 
 public class HomePage {
 
     public static void home(Scanner scanner, String username, String password) {
 
-        UIManager.animatedPrint("\n\n\n\n\n\n\nLovely to see you " + username + "\n\n");
+        UIManager.animatedPrint("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLovely to see you " + username + "\n\n");
 
         try {
             String UID = EncryptionManager.encrypt(username, username + ":" + password);
@@ -21,10 +20,11 @@ public class HomePage {
 
             boolean running = true;
             while (running) {
-                UIManager.animatedPrint("\n==== HOME MENU ====\n");
+                UIManager.animatedPrint("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n==== HOME MENU ====\n");
                 UIManager.animatedPrint("1. View pages\n");
                 UIManager.animatedPrint("2. Write page\n");
                 UIManager.animatedPrint("3. Log out\n");
+                UIManager.animatedPrint("4. Delete page\n");
                 UIManager.animatedPrint("Enter your choice: ");
 
                 String choice = UIManager.exitCheck(scanner.nextLine().trim());
@@ -39,11 +39,11 @@ public class HomePage {
                         break;
 
                     case "2":
-                        PageManager.writePage(scanner, username, UID, false);
+                        PageManager.writePage(scanner, username, UID);
                         break;
 
                     case "3":
-                        UIManager.animatedPrint("\nAre you sure? (If so type 'yes')\n");
+                        UIManager.animatedPrint("\n\n\nAre you sure? (If so type 'yes')\n");
                         String confirm = scanner.nextLine().trim();
                         if (confirm.isEmpty()) {
                             UIManager.animatedPrint("No input. Logout cancelled.\n");
@@ -51,11 +51,14 @@ public class HomePage {
                         }
 
                         if (confirm.equalsIgnoreCase("yes")) {
-                            UIManager.animatedPrint("\nLogging out... Goodbye, " + username + "\n");
+                            UIManager.animatedPrint("\n\n\n\n\n\n\n\n\n\n\nLogging out... Goodbye, " + username + "\n");
                             running = false;
                         } else {
                             UIManager.animatedPrint("Logout cancelled.\n");
                         }
+                        break;
+                    case "4":
+                        PageManager.deletePage(scanner, username, UID);
                         break;
 
                     default:
