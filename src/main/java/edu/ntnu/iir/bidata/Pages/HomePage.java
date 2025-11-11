@@ -12,15 +12,16 @@ public class HomePage {
 
     public static void home(Scanner scanner, String username, String password) {
 
-        UIManager.animatedPrint("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nLovely to see you " + username + "\n\n");
-
         try {
             String UID = EncryptionManager.encrypt(username, username + ":" + password);
             FileManager.findAuthor(UID);
 
             boolean running = true;
+
             while (running) {
-                UIManager.animatedPrint("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n==== HOME MENU ====\n");
+                UIManager.clearScreen();
+                UIManager.animatedPrint(username.toUpperCase());
+                UIManager.animatedPrint("\n\n==== HOME MENU ====\n");
                 UIManager.animatedPrint("1. View pages\n");
                 UIManager.animatedPrint("2. Write page\n");
                 UIManager.animatedPrint("3. Log out\n");
@@ -35,14 +36,17 @@ public class HomePage {
 
                 switch (choice) {
                     case "1":
+                        UIManager.clearScreen();
                         PageManager.viewPages(scanner, username, UID);
                         break;
 
                     case "2":
+                        UIManager.clearScreen();
                         PageManager.writePage(scanner, username, UID);
                         break;
 
                     case "3":
+                        UIManager.clearScreen();
                         UIManager.animatedPrint("\n\n\nAre you sure? (If so type 'yes')\n");
                         String confirm = scanner.nextLine().trim();
                         if (confirm.isEmpty()) {
@@ -58,6 +62,7 @@ public class HomePage {
                         }
                         break;
                     case "4":
+                        UIManager.clearScreen();
                         PageManager.deletePage(scanner, username, UID);
                         break;
 

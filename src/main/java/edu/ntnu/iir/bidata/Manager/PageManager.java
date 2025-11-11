@@ -32,11 +32,29 @@ public class PageManager {
                 return;
             }
 
+            // --- Define clean column spacing ---
+            int nameWidth = 35;
+            int dateWidth = 35; // spacing for created and edited dates
+
+            // --- Table Header ---
+            System.out.printf("%-4s %-" + nameWidth + "s %-" + dateWidth + "s %-" + dateWidth + "s%n",
+                    "#", "Page Name", "Created", "Edited");
+
+            // --- Table Rows ---
             for (int i = 0; i < pages.size(); i++) {
                 DiaryPage page = pages.get(i);
-                System.out.println((i + 1) + ". " + page.getDiaryID(UID) +
-                        " (Created: " + page.getCreatedTime(UID) +
-                        (page.getEditedTime(UID).isEmpty() ? "" : ", Edited: " + page.getEditedTime(UID)) + ")");
+
+                String name = page.getDiaryID(UID);
+                String created = page.getCreatedTime(UID);
+                String edited = page.getEditedTime(UID).isEmpty() ? "-" : page.getEditedTime(UID);
+
+                // Shorten very long names so they don’t break layout
+                if (name.length() > nameWidth - 3) {
+                    name = name.substring(0, nameWidth - 6) + "...";
+                }
+
+                System.out.printf("%-4d %-" + nameWidth + "s %-" + dateWidth + "s %-" + dateWidth + "s%n",
+                        (i + 1), name, created, edited);
             }
 
             System.out.print("Enter the number of the page to open (or 0 to cancel): ");
@@ -59,11 +77,13 @@ public class PageManager {
                 System.out.println("Cancelled.");
                 return;
             }
+
             if (choice < 1 || choice > pages.size()) {
                 System.out.println("Invalid choice.");
                 return;
             }
 
+            // --- Open the selected page ---
             DiaryPage selectedPage = pages.get(choice - 1);
 
             String encryptedDiaryID = EncryptionManager.encrypt(selectedPage.getDiaryID(UID), UID);
@@ -87,7 +107,7 @@ public class PageManager {
                 return;
             }
 
-            System.out.println("Draft opened. Press Enter in terminal when done editing...");
+            System.out.println("Draft opened. Press Enter when done editing...");
             scanner.nextLine();
 
             String newContent = Files.readString(DRAFT_FILE.toPath());
@@ -99,8 +119,8 @@ public class PageManager {
             Files.writeString(DRAFT_FILE.toPath(), "");
             UIManager.animatedPrint("Changes saved.\n");
 
-        } catch (Exception errorMessage) {
-            errorMessage.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -212,7 +232,7 @@ public class PageManager {
 
             DiaryPage selectedPage = pages.get(choice - 1);
 
-            // ✅ Build file name exactly like in viewPages()
+            // Build file name exactly like in viewPages()
             String encryptedDiaryID = EncryptionManager.encrypt(selectedPage.getDiaryID(UID), UID);
             String safeEncryptedID = Base64.getUrlEncoder().encodeToString(
                     encryptedDiaryID.getBytes(StandardCharsets.UTF_8));
