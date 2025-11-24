@@ -1,3 +1,19 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.checkstyle.version": "12.1.2",
+  "java.checkstyle.configuration": "/google_checks.xml",
+  "checkstyle-converter.indentPreference": 2,
+  "checkstyle-converter.changeIncrements": true,
+  "java.foldingRange.enabled": true,
+  "editor.tabSize": 2,
+  "editor.indentSize": "tabSize",
+  "files.autoSave": "onFocusChange",
+  "editor.autoIndent": "brackets",
+
+  "[java]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  }
 }
