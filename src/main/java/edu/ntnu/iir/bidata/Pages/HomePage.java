@@ -35,7 +35,7 @@ public class HomePage {
       boolean running = true;
 
       while (running) {
-        InterfaceManager.clearScreen();
+        InterfaceManager.clearScreen(scanner);
         InterfaceManager.animatedPrint(username.toUpperCase());
         InterfaceManager.animatedPrint("\n\n==== HOME MENU ====\n");
         InterfaceManager.animatedPrint("1. View pages\n");
@@ -44,48 +44,45 @@ public class HomePage {
         InterfaceManager.animatedPrint("4. Delete page\n");
         InterfaceManager.animatedPrint("Enter your choice: ");
 
-        String choice = InterfaceManager.exitCheck(scanner.nextLine().trim());
-        if (choice.isEmpty()) {
-          InterfaceManager.animatedPrint("No input detected. Please enter a number.\n");
-          continue;
-        }
-
-        switch (choice) {
-          case "1":
-            InterfaceManager.clearScreen();
-            PageManager.viewPages(scanner, username, id);
-            break;
-          case "2":
-            InterfaceManager.clearScreen();
-            PageManager.writePage(scanner, username, id);
-            break;
-          case "3":
-            InterfaceManager.clearScreen();
-            InterfaceManager.animatedPrint("\n\n\nAre you sure? (If so type 'yes')\n");
-            String confirm = scanner.nextLine().trim();
-            if (confirm.isEmpty()) {
-              InterfaceManager.animatedPrint("No input. Logout cancelled.\n");
+        String choice = InterfaceManager.exitCheck(scanner);
+        if (choice != null) {
+          switch (choice) {
+            case "1":
+              InterfaceManager.clearScreen(scanner);
+              PageManager.viewPages(scanner, username, id);
               break;
-            }
-            if (confirm.equalsIgnoreCase("yes")) {
-              InterfaceManager.animatedPrint("\n\nLogging out... Goodbye, " + username + "\n");
-              running = false;
-            } else {
-              InterfaceManager.animatedPrint("Logout cancelled.\n");
-            }
-            break;
-          case "4":
-            InterfaceManager.clearScreen();
-            PageManager.deletePage(scanner, username, id);
-            break;
-          default:
-            InterfaceManager.animatedPrint("Invalid choice. Please try again.\n");
+            case "2":
+              InterfaceManager.clearScreen(scanner);
+              PageManager.writePage(scanner, username, id);
+              break;
+            case "3":
+              InterfaceManager.clearScreen(scanner);
+              InterfaceManager.animatedPrint("\n\n\nAre you sure? (If so type 'yes')\n");
+              String confirm = scanner.nextLine().trim();
+              if (confirm.isEmpty()) {
+                InterfaceManager.animatedPrint("No input. Logout cancelled.\n");
+                break;
+              }
+              if (confirm.equalsIgnoreCase("yes")) {
+                InterfaceManager.animatedPrint("\n\nLogging out... Goodbye, " + username + "\n");
+                running = false;
+              } else {
+                InterfaceManager.animatedPrint("Logout cancelled.\n");
+              }
+              break;
+            case "4":
+              InterfaceManager.clearScreen(scanner);
+              PageManager.deletePage(scanner, username, id);
+              break;
+            default:
+              InterfaceManager.animatedPrint("Invalid choice. Please try again.\n");
+          }
         }
       }
-    } catch (IOException | RuntimeException exception) {
-      exception.printStackTrace();
-    } catch (Exception exception) {
-      exception.printStackTrace();
+    } catch (IOException | RuntimeException error) {
+      InterfaceManager.errorHandling(error, scanner);
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
   }
 }

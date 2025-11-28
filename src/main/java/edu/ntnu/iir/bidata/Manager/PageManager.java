@@ -65,9 +65,10 @@ public class PageManager {
       for (int i = 0; i < pages.size(); i++) {
         DiaryPage page = pages.get(i);
 
-        String name = page.getDiaryId(id);
-        String created = page.getCreatedTime(id);
-        String edited = page.getEditedTime(id).isEmpty() ? "-" : page.getEditedTime(id);
+        String name = page.getDiaryId(id, scanner);
+        String created = page.getCreatedTime(id, scanner);
+        String edited = page.getEditedTime(id, scanner).isEmpty() 
+            ? "-" : page.getEditedTime(id, scanner);
 
         if (name.length() > nameWidth - 3) {
           name = name.substring(0, nameWidth - 6) + "...";
@@ -78,7 +79,7 @@ public class PageManager {
       }
 
       System.out.print("Enter the number of the page to open (or 0 to cancel): ");
-      String input = InterfaceManager.exitCheck(scanner.nextLine().trim());
+      String input = InterfaceManager.exitCheck(scanner);
 
       if (input == null || input.isEmpty()) {
         System.out.println("No input detected. Cancelled.");
@@ -90,28 +91,40 @@ public class PageManager {
         choice = Integer.parseInt(input);
       } catch (NumberFormatException e) {
         System.out.println("Invalid input. Please enter a number.");
+        InterfaceManager.animatedPrint(
+            "After reading the message you can move on by pressing (ENTER)");
+        scanner.nextLine();
         return;
       }
 
       if (choice == 0) {
         System.out.println("Cancelled.");
+        InterfaceManager.animatedPrint(
+            "After reading the message you can move on by pressing (ENTER)");
+        scanner.nextLine().trim();
         return;
       }
 
       if (choice < 1 || choice > pages.size()) {
         System.out.println("Invalid choice.");
+        InterfaceManager.animatedPrint(
+            "After reading the message you can move on by pressing (ENTER)");
+        scanner.nextLine().trim();
         return;
       }
 
       DiaryPage selectedPage = pages.get(choice - 1);
 
-      String encryptedDiaryId = EncryptionManager.encrypt(selectedPage.getDiaryId(id), id);
+      String encryptedDiaryId = EncryptionManager.encrypt(selectedPage.getDiaryId(id, scanner), id);
       String safeEncryptedId = Base64.getUrlEncoder().encodeToString(
           encryptedDiaryId.getBytes(StandardCharsets.UTF_8));
 
       File encryptedFile = new File(PAGES_DIR, safeEncryptedId + ".txt");
       if (!encryptedFile.exists()) {
         System.out.println("File not found: " + encryptedFile.getAbsolutePath());
+        InterfaceManager.animatedPrint(
+            "After reading the message you can move on by pressing (ENTER)");
+        scanner.nextLine().trim();
         return;
       }
 
@@ -133,13 +146,13 @@ public class PageManager {
       String reEncrypted = EncryptionManager.encrypt(newContent, id);
       Files.writeString(encryptedFile.toPath(), reEncrypted);
 
-      selectedPage.setEditedTime(id, Time.now());
+      selectedPage.setEditedTime(id, Time.now(), scanner);
       FileManager.saveAuthor(author);
       Files.writeString(DRAFT_FILE.toPath(), "");
       InterfaceManager.animatedPrint("Changes saved.\n");
 
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
   }
 
@@ -160,7 +173,7 @@ public class PageManager {
       }
 
       InterfaceManager.animatedPrint("Enter a title for your new page: ");
-      String title = InterfaceManager.exitCheck(scanner.nextLine().trim());
+      String title = InterfaceManager.exitCheck(scanner);
       if (title == null || title.equalsIgnoreCase("back")) {
         return;
       }
@@ -181,9 +194,9 @@ public class PageManager {
       }
 
       boolean exists = author.getPages().stream()
-          .anyMatch(p -> Objects.equals(p.getDiaryId(id), diaryId));
+          .anyMatch(p -> Objects.equals(p.getDiaryId(id, scanner), diaryId));
       if (!exists) {
-        DiaryPage newPage = new DiaryPage(id, encryptedDiaryId, Time.now());
+        DiaryPage newPage = new DiaryPage(id, encryptedDiaryId, Time.now(), scanner);
         author.getPages().add(newPage);
       }
 
@@ -206,16 +219,16 @@ public class PageManager {
       Files.writeString(encryptedFile.toPath(), encryptedContent);
 
       author.getPages().stream()
-          .filter(p -> Objects.equals(p.getDiaryId(id), diaryId))
+          .filter(p -> Objects.equals(p.getDiaryId(id, scanner), diaryId))
           .findFirst()
-          .ifPresent(p -> p.setEditedTime(id, Time.now()));
+          .ifPresent(p -> p.setEditedTime(id, Time.now(), scanner));
 
       FileManager.saveAuthor(author);
       Files.writeString(DRAFT_FILE.toPath(), "");
       InterfaceManager.animatedPrint("Page saved.\n");
 
-    } catch (Exception errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
   }
 
@@ -241,19 +254,18 @@ public class PageManager {
 
       for (int i = 0; i < pages.size(); i++) {
         DiaryPage page = pages.get(i);
-        System.out.println((i + 1) + ". " + page.getDiaryId(id)
+        System.out.println((i + 1) + ". " + page.getDiaryId(id, scanner)
             + " (Created: "
-            + page.getCreatedTime(id)
-            + (page.getEditedTime(id).isEmpty() ? "" : ", Edited: "
-            + page.getEditedTime(id))
+            + page.getCreatedTime(id, scanner)
+            + (page.getEditedTime(id, scanner).isEmpty() ? "" : ", Edited: "
+            + page.getEditedTime(id, scanner))
             + ")");
       }
 
       System.out.print("Enter the number of the page to delete (or 0 to cancel): ");
-      String input = InterfaceManager.exitCheck(scanner.nextLine().trim());
+      String input = InterfaceManager.exitCheck(scanner);
 
       if (input == null || input.isEmpty()) {
-        System.out.println("No input detected. Cancelled.");
         return;
       }
 
@@ -262,6 +274,9 @@ public class PageManager {
         choice = Integer.parseInt(input);
       } catch (NumberFormatException e) {
         System.out.println("Invalid input. Please enter a number.");
+        InterfaceManager.animatedPrint(
+            "After reading the message you can move on by pressing (ENTER)");
+        scanner.nextLine();
         return;
       }
 
@@ -277,14 +292,14 @@ public class PageManager {
       DiaryPage selectedPage = pages.get(choice - 1);
 
       // Build file name exactly like in viewPages()
-      String encryptedDiaryId = EncryptionManager.encrypt(selectedPage.getDiaryId(id), id);
+      String encryptedDiaryId = EncryptionManager.encrypt(selectedPage.getDiaryId(id, scanner), id);
       String safeEncryptedId = Base64.getUrlEncoder().encodeToString(
           encryptedDiaryId.getBytes(StandardCharsets.UTF_8));
       File encryptedFile = new File(PAGES_DIR, safeEncryptedId + ".txt");
 
       // Confirm deletion
       System.out.print("Are you sure you want to delete '"
-          + selectedPage.getDiaryId(id) + "'? (yes/no): ");
+          + selectedPage.getDiaryId(id, scanner) + "'? (yes/no): ");
       String confirm = scanner.nextLine().trim();
       if (!confirm.equalsIgnoreCase("yes")) {
         System.out.println("Delete cancelled.");
@@ -303,8 +318,8 @@ public class PageManager {
         InterfaceManager.animatedPrint("Page metadata removed, but file could not be deleted.\n");
       }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
   }
 

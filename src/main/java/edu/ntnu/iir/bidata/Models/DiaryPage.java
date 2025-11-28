@@ -1,6 +1,8 @@
 package edu.ntnu.iir.bidata.models;
 
 import edu.ntnu.iir.bidata.manager.EncryptionManager;
+import edu.ntnu.iir.bidata.manager.InterfaceManager;
+import java.util.Scanner;
 
 /**
  * Represents a diary page in the digital diary application.
@@ -24,12 +26,12 @@ public class DiaryPage {
    * @param diaryId     the unique identifier of the diary page
    * @param createdTime the creation time of the page
    */
-  public DiaryPage(String id, String diaryId, String createdTime) {
+  public DiaryPage(String id, String diaryId, String createdTime, Scanner scanner) {
     this.diaryId = diaryId;
     try {
       this.createdTime = EncryptionManager.encrypt(createdTime, id);
-    } catch (Exception errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
   }
 
@@ -39,11 +41,11 @@ public class DiaryPage {
    * @param id the encryption key or user identifier
    * @return the decrypted diary ID
    */
-  public String getDiaryId(String id) {
+  public String getDiaryId(String id, Scanner scanner) {
     try {
       return EncryptionManager.decrypt(diaryId, id);
-    } catch (Exception errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
     return diaryId;
   }
@@ -54,11 +56,11 @@ public class DiaryPage {
    * @param id the encryption key or user identifier
    * @return the decrypted creation time
    */
-  public String getCreatedTime(String id) {
+  public String getCreatedTime(String id, Scanner scanner) {
     try {
       return EncryptionManager.decrypt(createdTime, id);
-    } catch (Exception errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
     return createdTime;
   }
@@ -69,11 +71,11 @@ public class DiaryPage {
    * @param id the encryption key or user identifier
    * @return the decrypted edited time
    */
-  public String getEditedTime(String id) {
+  public String getEditedTime(String id, Scanner scanner) {
     try {
       return EncryptionManager.decrypt(editedTime, id + id);
-    } catch (Exception errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
     return editedTime;
   }
@@ -84,11 +86,11 @@ public class DiaryPage {
    * @param id         the encryption key or user identifier
    * @param editedTime the new edited time to set
    */
-  public void setEditedTime(String id, String editedTime) {
+  public void setEditedTime(String id, String editedTime, Scanner scanner) {
     try {
       this.editedTime = EncryptionManager.encrypt(editedTime, id + id);
-    } catch (Exception errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (Exception error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
   }
 }

@@ -39,7 +39,7 @@ public class AuthPage {
    */
   public static int authenticate(Scanner scanner) {
     InterfaceManager.animatedPrint("Have I seen you before? (Do you have an account. Yes/No): ");
-    String userInput = normalize(InterfaceManager.exitCheck(scanner.nextLine()));
+    String userInput = normalize(InterfaceManager.exitCheck(scanner));
     if (userInput == null) {
       return 0;
     }
@@ -67,7 +67,8 @@ public class AuthPage {
         }
 
         InterfaceManager.animatedPrint("Username: ");
-        String name = normalize(InterfaceManager.exitCheck(scanner.nextLine()));
+        String name = normalize(InterfaceManager.exitCheck(scanner));
+        
         if (name == null) {
           return 0;
         }
@@ -81,7 +82,7 @@ public class AuthPage {
         }
 
         InterfaceManager.animatedPrint("Password: ");
-        String password = InterfaceManager.exitCheck(scanner.nextLine());
+        String password = InterfaceManager.exitCheck(scanner);
         if (password == null) {
           return 0;
         }
@@ -94,8 +95,8 @@ public class AuthPage {
               HomePage.home(scanner, name, password);
               return -1;
             }
-          } catch (Exception ignored) {
-            // Ignore decryption errors
+          } catch (Exception e) {
+            ;
           }
         }
 
@@ -106,7 +107,7 @@ public class AuthPage {
       } else if (userInput.equalsIgnoreCase("No")) {
         InterfaceManager.animatedPrint("Love meeting new people. What's your name?\n");
         InterfaceManager.animatedPrint("Username: ");
-        String name = normalize(InterfaceManager.exitCheck(scanner.nextLine()));
+        String name = normalize(InterfaceManager.exitCheck(scanner));
         if (name == null) {
           return 0;
         }
@@ -120,13 +121,13 @@ public class AuthPage {
         }
 
         InterfaceManager.animatedPrint("Password: ");
-        String password1 = InterfaceManager.exitCheck(scanner.nextLine());
+        String password1 = InterfaceManager.exitCheck(scanner);
         if (password1 == null) {
           return 0;
         }
 
         InterfaceManager.animatedPrint("Retype password: ");
-        String password2 = InterfaceManager.exitCheck(scanner.nextLine());
+        String password2 = InterfaceManager.exitCheck(scanner);
         if (password2 == null) {
           return 0;
         }
@@ -150,16 +151,16 @@ public class AuthPage {
           InterfaceManager.animatedPrint("Account created successfully!\n");
           HomePage.home(scanner, name, password1);
           return -1;
-        } catch (Exception e) {
-          e.printStackTrace();
+        } catch (Exception error) {
+          InterfaceManager.errorHandling(error, scanner);
           return 0;
         }
       }
 
       return 0;
 
-    } catch (IOException errorMessage) {
-      errorMessage.printStackTrace();
+    } catch (IOException error) {
+      InterfaceManager.errorHandling(error, scanner);
     }
     return 0;
   }
@@ -178,8 +179,8 @@ public class AuthPage {
           names.add(line.trim());
         }
       }
-    } catch (IOException ignored) {
-      // Ignore file read errors
+    } catch (IOException e) {
+      ;
     }
     return names;
   }
@@ -192,8 +193,8 @@ public class AuthPage {
    * @return true if the list contains the value, false otherwise
    */
   private static boolean containsIgnoreCase(List<String> list, String value) {
-    for (String s : list) {
-      if (s.equalsIgnoreCase(value)) {
+    for (String item : list) {
+      if (item.equalsIgnoreCase(value)) {
         return true;
       }
     }
