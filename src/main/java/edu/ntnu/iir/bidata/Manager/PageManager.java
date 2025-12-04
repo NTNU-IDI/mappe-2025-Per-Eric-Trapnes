@@ -53,6 +53,9 @@ public class PageManager {
       System.out.println("\nPages for " + username + ":");
       if (pages == null || pages.isEmpty()) {
         System.out.println("(No pages yet.)");
+        InterfaceManager.animatedPrint(
+            "After reading the message you can move on by pressing (ENTER)");
+        scanner.nextLine();
         return;
       }
 

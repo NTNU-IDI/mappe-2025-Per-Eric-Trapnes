@@ -1,0 +1,11 @@
+edu\ntnu\iir\bidata\manager\EncryptionManager.class
+edu\ntnu\iir\bidata\models\Author.class
+edu\ntnu\iir\bidata\Main.class
+edu\ntnu\iir\bidata\manager\PageManager.class
+edu\ntnu\iir\bidata\pages\HomePage.class
+edu\ntnu\iir\bidata\pages\WelcomePage.class
+edu\ntnu\iir\bidata\models\DiaryPage.class
+edu\ntnu\iir\bidata\pages\AuthPage.class
+edu\ntnu\iir\bidata\manager\InterfaceManager.class
+edu\ntnu\iir\bidata\models\Time.class
+edu\ntnu\iir\bidata\manager\FileManager.class

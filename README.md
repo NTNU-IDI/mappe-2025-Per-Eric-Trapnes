@@ -24,11 +24,11 @@ https://github.com/NTNU-IDI/mappe-2025-Per-Eric-Trapnes
 
 ## How to run the project
 
-What is the input and output of the program? What is the expected behaviour of the program?
+Run via Terminal in the path "mappe-2025-sonofper\target>" with this command "java -jar digital-diary-1.0-SNAPSHOT.jar"
 
 ## How to run the tests
 
-Run via your IDE or mvn compile exec:java
+Run via Terminal in the path "mappe-2025-sonofper>" with this command ".\mvnw test"
 
 ## References
 

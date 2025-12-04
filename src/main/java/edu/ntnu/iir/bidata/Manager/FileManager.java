@@ -41,6 +41,8 @@ public class FileManager {
    */
   public static List<Author> loadAuthors() throws IOException {
     if (!jsonFile.exists() || jsonFile.length() == 0) {
+      jsonFile.getParentFile().mkdirs();
+      jsonFile.createNewFile();
       return new ArrayList<>();
     }
     try (Reader reader = new FileReader(jsonFile)) {
