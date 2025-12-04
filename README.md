@@ -32,4 +32,4 @@ Run via Terminal in the path "mappe-2025-sonofper>" with this command ".\mvnw te
 
 ## References
 
-All code is writen by me with Chat-GPT explaining consepts that are outside my scope.
+All code is writen by me with COPILOT explaining consepts that are outside my scope.
